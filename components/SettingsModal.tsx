@@ -7,10 +7,16 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Linking,
 } from 'react-native';
+import Constants from 'expo-constants';
 import { useSettings } from '../contexts/SettingsContext';
 import { ThemePref } from '../contexts/SettingsContext';
 import { Language, LANGUAGE_LABELS } from '../constants/translations';
+
+const APP_VERSION = Constants.expoConfig?.version ?? '1.0.0';
+const PRIVACY_POLICY_URL =
+  'https://github.com/Dinolisk/Valutaomvandlare/blob/master/PRIVACY-POLICY.md';
 
 interface Props {
   visible: boolean;
@@ -87,6 +93,21 @@ export default function SettingsModal({ visible, onClose }: Props) {
                 );
               })}
             </View>
+            {/* About */}
+            <Text style={styles.sectionLabel}>About</Text>
+            <View style={styles.optionGroup}>
+              <TouchableOpacity
+                style={styles.optionRow}
+                onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.optionText}>Privacy Policy</Text>
+                <Text style={styles.linkArrow}>›</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Version */}
+            <Text style={styles.version}>Version {APP_VERSION}</Text>
           </ScrollView>
         </SafeAreaView>
       </View>
@@ -186,6 +207,18 @@ function makeStyles(colors: import('../constants/theme').ColorScheme) {
       height: 10,
       borderRadius: 5,
       backgroundColor: colors.accent,
+    },
+    linkArrow: {
+      fontSize: 20,
+      color: colors.textMuted,
+      lineHeight: 24,
+    },
+    version: {
+      fontSize: 12,
+      color: colors.textMuted,
+      textAlign: 'center',
+      marginTop: 28,
+      marginBottom: 4,
     },
   });
 }
