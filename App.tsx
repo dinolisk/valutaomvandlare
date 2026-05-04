@@ -341,7 +341,7 @@ function makeStyles(colors: ColorScheme) {
       marginRight: 8,
     },
     headerTitle: {
-      fontSize: 17,
+      fontSize: 18,
       fontWeight: '800',
       color: colors.textPrimary,
       letterSpacing: 0.2,

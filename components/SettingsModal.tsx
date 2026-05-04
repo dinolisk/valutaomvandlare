@@ -155,7 +155,7 @@ function makeStyles(colors: import('../constants/theme').ColorScheme) {
       paddingVertical: 16,
     },
     title: {
-      fontSize: 17,
+      fontSize: 18,
       fontWeight: '700',
       color: colors.textPrimary,
     },

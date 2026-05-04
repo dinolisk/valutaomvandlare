@@ -38,7 +38,7 @@ export interface Translations {
 
 const translations: Record<Language, Translations> = {
   sv: {
-    appTitle: 'Valutaomvandlare',
+    appTitle: 'Valutaväxlare',
     currenciesActive: (n: number) => `${n} valutor aktiva`,
     addCurrency: 'Lägg till valuta',
     changeCurrency: 'Byt valuta',
