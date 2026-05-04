@@ -1,8 +1,8 @@
-# Privacy Policy for Valutaomvandlare
+# Privacy Policy for Instant Rate Converter
 
 **Last updated: May 4, 2026**
 
-This Privacy Policy describes how your personal information is handled in Valutaomvandlare (Currency Converter).
+This Privacy Policy describes how your personal information is handled in Instant Rate Converter.
 
 ## 1. Personal Information
 
