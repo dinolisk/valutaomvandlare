@@ -7,11 +7,14 @@ import {
   Image,
   Platform,
   ViewStyle,
+  useWindowDimensions,
 } from 'react-native';
 import { Currency, getFlagUrl } from '../data/currencies';
 import { getLocalizedName } from '../data/currencyNames';
 import { useSettings } from '../contexts/SettingsContext';
 import { ColorScheme } from '../constants/theme';
+
+const TABLET_MIN_WIDTH = 768;
 
 interface Props {
   currency: Currency;
@@ -19,6 +22,8 @@ interface Props {
   isActive: boolean;
   isEditMode: boolean;
   pendingReplace: boolean;
+  /** List row height budget from App (see MAX_CARD_HEIGHT); caps minHeight on small screens */
+  maxCardHeight: number;
   style?: ViewStyle;
   onChangeCurrency: (code: string) => void;
   onActivate: (code: string) => void;
@@ -31,17 +36,21 @@ export default function CurrencyCard({
   isActive,
   isEditMode,
   pendingReplace,
+  maxCardHeight,
   style,
   onChangeCurrency,
   onActivate,
   onRemove,
 }: Props) {
   const { colors, language } = useSettings();
-  const styles = makeStyles(colors);
+  const { width } = useWindowDimensions();
+  const isTablet = width >= TABLET_MIN_WIDTH;
+  const styles = makeStyles(colors, isTablet);
   const localizedName = getLocalizedName(currency.code, language, currency.name);
+  const cardMinHeight = Math.min(64, maxCardHeight);
 
   return (
-    <View style={[styles.card, isActive && styles.cardActive, style]}>
+    <View style={[styles.card, isActive && styles.cardActive, { minHeight: cardMinHeight }, style]}>
       {isActive && <View style={styles.accentBar} />}
 
       {/* Left: flag + code/name — tap to swap currency in this slot */}
@@ -101,7 +110,10 @@ export default function CurrencyCard({
   );
 }
 
-function makeStyles(colors: ColorScheme) {
+function makeStyles(colors: ColorScheme, isTablet: boolean) {
+  const flagSize = isTablet ? 52 : 42;
+  const flagRadius = flagSize / 2;
+
   return StyleSheet.create({
     card: {
       flex: 1,
@@ -113,7 +125,6 @@ function makeStyles(colors: ColorScheme) {
       borderWidth: 1.5,
       borderColor: colors.border,
       overflow: 'hidden',
-      minHeight: 64,
       maxHeight: 110,
       ...Platform.select({
         web: { boxShadow: '0px 1px 4px rgba(0, 0, 0, 0.08)' },
@@ -142,28 +153,28 @@ function makeStyles(colors: ColorScheme) {
       flexDirection: 'row',
       alignItems: 'center',
       flex: 1,
-      paddingLeft: 14,
+      paddingLeft: isTablet ? 20 : 14,
       paddingVertical: 10,
       paddingRight: 8,
     },
     flagCircle: {
-      width: 42,
-      height: 42,
-      borderRadius: 21,
-      marginRight: 12,
+      width: flagSize,
+      height: flagSize,
+      borderRadius: flagRadius,
+      marginRight: isTablet ? 16 : 12,
       overflow: 'visible',
     },
     flagInner: {
-      width: 42,
-      height: 42,
-      borderRadius: 21,
+      width: flagSize,
+      height: flagSize,
+      borderRadius: flagRadius,
       overflow: 'hidden',
       borderWidth: 1,
       borderColor: 'rgba(0,0,0,0.15)',
     } as ViewStyle,
     flagImage: {
-      width: 42,
-      height: 42,
+      width: flagSize,
+      height: flagSize,
     },
     removeBadge: {
       position: 'absolute',
@@ -187,13 +198,13 @@ function makeStyles(colors: ColorScheme) {
       flexShrink: 1,
     },
     code: {
-      fontSize: 16,
+      fontSize: isTablet ? 18 : 16,
       fontWeight: '700',
       color: colors.textPrimary,
       letterSpacing: 0.3,
     },
     name: {
-      fontSize: 11,
+      fontSize: isTablet ? 13 : 11,
       color: colors.textSecondary,
       marginTop: 1,
     },
@@ -204,20 +215,20 @@ function makeStyles(colors: ColorScheme) {
     },
     right: {
       width: '54%',
-      paddingHorizontal: 14,
+      paddingHorizontal: isTablet ? 20 : 14,
       paddingVertical: 10,
       alignItems: 'flex-end',
       justifyContent: 'center',
     },
     value: {
-      fontSize: 20,
+      fontSize: isTablet ? 24 : 20,
       fontWeight: '600',
       color: colors.textSecondary,
       textAlign: 'right',
     },
     valueActive: {
       color: colors.accent,
-      fontSize: 22,
+      fontSize: isTablet ? 26 : 22,
       fontWeight: '700',
     },
     valuePending: {

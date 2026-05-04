@@ -7,6 +7,7 @@ interface Props {
   onDigit: (d: string) => void;
   onDelete: () => void;
   onClear: () => void;
+  compact?: boolean;
 }
 
 const DIGIT_ROWS = [
@@ -19,9 +20,9 @@ const DIGIT_ROWS = [
 const BOTTOM_LEFT = '0';
 const BOTTOM_RIGHT = [',', 'C', '⌫'];
 
-export default function NumberPad({ onDigit, onDelete, onClear }: Props) {
+export default function NumberPad({ onDigit, onDelete, onClear, compact = false }: Props) {
   const { colors } = useSettings();
-  const styles = makeStyles(colors);
+  const styles = makeStyles(colors, compact);
 
   const handlePress = (key: string) => {
     if (key === '⌫') onDelete();
@@ -88,25 +89,29 @@ export default function NumberPad({ onDigit, onDelete, onClear }: Props) {
   );
 }
 
-function makeStyles(colors: ColorScheme) {
+function makeStyles(colors: ColorScheme, compact: boolean) {
   return StyleSheet.create({
     pad: {
+      flex: compact ? 1 : undefined,
+      maxHeight: compact ? 560 : undefined,
       paddingHorizontal: 16,
-      paddingBottom: 24,
-      paddingTop: 8,
+      paddingBottom: compact ? 12 : 24,
+      paddingTop: compact ? 12 : 8,
+      gap: compact ? 8 : undefined,
       backgroundColor: colors.card,
-      borderTopWidth: 1,
+      borderTopWidth: compact ? 0 : 1,
       borderTopColor: colors.border,
     },
     row: {
+      flex: compact ? 1 : undefined,
       flexDirection: 'row',
       justifyContent: 'space-between',
-      marginBottom: 10,
+      marginBottom: compact ? 0 : 10,
     },
     key: {
       flex: 3,
       marginHorizontal: 4,
-      height: 54,
+      height: compact ? undefined : 54,
       borderRadius: 14,
       backgroundColor: colors.background,
       alignItems: 'center',
@@ -117,7 +122,7 @@ function makeStyles(colors: ColorScheme) {
     keySmallFlex: {
       flex: 2,
       marginHorizontal: 4,
-      height: 54,
+      height: compact ? undefined : 54,
       borderRadius: 14,
       backgroundColor: colors.background,
       alignItems: 'center',
@@ -134,22 +139,22 @@ function makeStyles(colors: ColorScheme) {
       borderColor: colors.border,
     },
     keyText: {
-      fontSize: 21,
+      fontSize: compact ? 26 : 21,
       fontWeight: '500',
       color: colors.textPrimary,
     },
     keyTextClear: {
-      fontSize: 16,
+      fontSize: compact ? 20 : 16,
       fontWeight: '700',
       color: colors.danger,
     },
     keyTextDelete: {
-      fontSize: 19,
+      fontSize: compact ? 24 : 19,
       color: colors.accent,
       fontWeight: '700',
     },
     keyTextComma: {
-      fontSize: 24,
+      fontSize: compact ? 30 : 24,
       fontWeight: '700',
     },
   });

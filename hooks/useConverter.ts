@@ -14,6 +14,7 @@ import {
 
 const STORAGE_KEY = 'active_currencies';
 const MAX_DIGITS = 12;
+const CACHE_MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
 
 async function loadSavedCurrencies(): Promise<string[]> {
   try {
@@ -32,16 +33,19 @@ async function saveCurrencies(codes: string[]): Promise<void> {
   } catch {}
 }
 
-function formatResult(n: number): string {
+function formatResult(n: number, locale: string): string {
   if (n === 0) return '0';
-  if (n >= 1_000) return n.toLocaleString('sv-SE', { maximumFractionDigits: 0 });
-  return n.toLocaleString('sv-SE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  if (n >= 1_000) return n.toLocaleString(locale, { maximumFractionDigits: 0 });
+  return n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
-function formatInputDisplay(s: string): string {
+function formatInputDisplay(s: string, locale: string): string {
   const [intPart, decPart] = s.split(',');
-  const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\u00A0');
-  return decPart !== undefined ? `${formattedInt},${decPart}` : formattedInt;
+  const n = parseInt(intPart, 10);
+  const formattedInt = isNaN(n) ? intPart : n.toLocaleString(locale, { maximumFractionDigits: 0 });
+  if (decPart === undefined) return formattedInt;
+  const decimalSep = (1.1).toLocaleString(locale).replace(/1/g, '');
+  return `${formattedInt}${decimalSep}${decPart}`;
 }
 
 function toInputString(n: number): string {
@@ -54,7 +58,7 @@ function toInputString(n: number): string {
   return s || '0';
 }
 
-export function useConverter() {
+export function useConverter(locale: string = 'sv-SE') {
   const [activeCodes, setActiveCodes] = useState<string[]>(DEFAULT_CURRENCIES);
   const [baseCode, setBaseCode] = useState<string>(DEFAULT_BASE_CURRENCY);
   const [inputString, setInputString] = useState<string>('1');
@@ -77,18 +81,21 @@ export function useConverter() {
         }
         setCachedRates(rates);
         setLoaded(true);
+
+        // Fetch fresh rates only if cache is older than 1 hour
+        const isFresh = rates !== null && (Date.now() - new Date(rates.fetchedAt).getTime()) < CACHE_MAX_AGE_MS;
+        if (!isFresh) {
+          fetchAndCacheRates()
+            .then((fresh) => {
+              setCachedRates(fresh);
+              setStartedOffline(false);
+            })
+            .catch(() => {
+              setStartedOffline(true);
+            });
+        }
       }
     );
-
-    // Fetch fresh rates in background; if it fails, mark as started offline
-    fetchAndCacheRates()
-      .then((fresh) => {
-        setCachedRates(fresh);
-        setStartedOffline(false);
-      })
-      .catch(() => {
-        setStartedOffline(true);
-      });
   }, []);
 
   useEffect(() => {
@@ -97,7 +104,7 @@ export function useConverter() {
 
   const refreshRates = useCallback(async () => {
     setIsRefreshing(true);
-    setRatesError(null);
+    setRatesError(false);
     try {
       const fresh = await fetchAndCacheRates();
       setCachedRates(fresh);
@@ -124,14 +131,14 @@ export function useConverter() {
 
   const getDisplayValue = useCallback(
     (code: string): string => {
-      if (code === baseCode) return formatInputDisplay(inputString);
+      if (code === baseCode) return formatInputDisplay(inputString, locale);
       if (baseAmount === 0) return '0';
       const baseRate = getRate(baseCode);
       const targetRate = getRate(code);
       if (baseRate === 0) return '0';
-      return formatResult((baseAmount / baseRate) * targetRate);
+      return formatResult((baseAmount / baseRate) * targetRate, locale);
     },
-    [baseCode, inputString, baseAmount, getRate]
+    [baseCode, inputString, baseAmount, getRate, locale]
   );
 
   const activateCurrency = useCallback(
@@ -195,6 +202,14 @@ export function useConverter() {
     setActiveCodes((prev) => (prev.includes(code) ? prev : [...prev, code]));
   }, []);
 
+  // Used after onboarding to start with chosen currencies
+  const initWithCurrency = useCallback((codes: string[]) => {
+    if (codes.length === 0) return;
+    setActiveCodes(codes);
+    setBaseCode(codes[0]);
+    setInputString('1');
+  }, []);
+
   const removeCurrency = useCallback(
     (code: string) => {
       setActiveCodes((prev) => prev.filter((c) => c !== code));
@@ -225,5 +240,6 @@ export function useConverter() {
     clearInput,
     addCurrency,
     removeCurrency,
+    initWithCurrency,
   };
 }

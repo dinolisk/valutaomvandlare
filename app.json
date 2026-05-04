@@ -4,7 +4,7 @@
     "slug": "instant-rate-converter",
     "owner": "dinolisk",
     "version": "1.0.0",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -37,6 +37,10 @@
       "eas": {
         "projectId": "eec57c4d-ecd0-4d53-8fa6-c8b996b4ee6f"
       }
-    }
+    },
+    "plugins": [
+      "expo-localization",
+      "expo-screen-orientation"
+    ]
   }
 }

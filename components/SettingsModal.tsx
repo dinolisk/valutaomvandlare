@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
   Linking,
+  Pressable,
 } from 'react-native';
 import Constants from 'expo-constants';
 import { useSettings } from '../contexts/SettingsContext';
@@ -38,8 +39,9 @@ export default function SettingsModal({ visible, onClose }: Props) {
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <SafeAreaView style={styles.sheet}>
+      <Pressable style={styles.overlay} onPress={onClose}>
+        <Pressable style={styles.sheet} onPress={() => {}}>
+        <SafeAreaView style={styles.sheetInner}>
           {/* Handle */}
           <View style={styles.handle} />
 
@@ -94,14 +96,14 @@ export default function SettingsModal({ visible, onClose }: Props) {
               })}
             </View>
             {/* About */}
-            <Text style={styles.sectionLabel}>About</Text>
+            <Text style={styles.sectionLabel}>{t.about}</Text>
             <View style={styles.optionGroup}>
               <TouchableOpacity
                 style={styles.optionRow}
                 onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.optionText}>Privacy Policy</Text>
+                <Text style={styles.optionText}>{t.privacyPolicy}</Text>
                 <Text style={styles.linkArrow}>›</Text>
               </TouchableOpacity>
             </View>
@@ -110,7 +112,8 @@ export default function SettingsModal({ visible, onClose }: Props) {
             <Text style={styles.version}>Version {APP_VERSION}</Text>
           </ScrollView>
         </SafeAreaView>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
@@ -123,11 +126,14 @@ function makeStyles(colors: import('../constants/theme').ColorScheme) {
       backgroundColor: 'rgba(0,0,0,0.45)',
     },
     sheet: {
+      maxHeight: '80%',
+    },
+    sheetInner: {
       backgroundColor: colors.modalBg,
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
       paddingBottom: 24,
-      maxHeight: '80%',
+      overflow: 'hidden',
     },
     handle: {
       width: 40,

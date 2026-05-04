@@ -141,6 +141,7 @@ export default function AddCurrencyModal({
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
           ItemSeparatorComponent={() => <View style={styles.separator} />}
+          style={styles.flatList}
         />
       </View>
     </Modal>
@@ -157,8 +158,11 @@ function makeStyles(colors: ColorScheme) {
       backgroundColor: colors.modalBg,
       borderTopLeftRadius: 24,
       borderTopRightRadius: 24,
-      maxHeight: '80%',
+      height: '80%',
       paddingBottom: 32,
+    },
+    flatList: {
+      flex: 1,
     },
     handle: {
       width: 40,

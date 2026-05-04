@@ -6,6 +6,12 @@ export const LANGUAGE_LABELS: Record<Language, string> = {
   es: 'Español',
 };
 
+export const LANGUAGE_LOCALE: Record<Language, string> = {
+  sv: 'sv-SE',
+  en: 'en-US',
+  es: 'es-ES',
+};
+
 export interface Translations {
   appTitle: string;
   currenciesActive: (n: number) => string;
@@ -26,6 +32,8 @@ export interface Translations {
   emptyCurrencies: string;
   emptyHint: string;
   done: string;
+  about: string;
+  privacyPolicy: string;
 }
 
 const translations: Record<Language, Translations> = {
@@ -49,6 +57,8 @@ const translations: Record<Language, Translations> = {
     emptyCurrencies: 'Inga valutor valda',
     emptyHint: 'Tryck på + för att lägga till en valuta.',
     done: 'Klar',
+    about: 'Om appen',
+    privacyPolicy: 'Integritetspolicy',
   },
   en: {
     appTitle: 'Currency Converter',
@@ -70,6 +80,8 @@ const translations: Record<Language, Translations> = {
     emptyCurrencies: 'No currencies selected',
     emptyHint: 'Tap + to add a currency.',
     done: 'Done',
+    about: 'About',
+    privacyPolicy: 'Privacy Policy',
   },
   es: {
     appTitle: 'Conversor de divisas',
@@ -91,6 +103,8 @@ const translations: Record<Language, Translations> = {
     emptyCurrencies: 'Sin divisas seleccionadas',
     emptyHint: 'Toca + para agregar una divisa.',
     done: 'Listo',
+    about: 'Acerca de',
+    privacyPolicy: 'Política de privacidad',
   },
 } as const;
 
