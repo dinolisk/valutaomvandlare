@@ -2,6 +2,7 @@
   "expo": {
     "name": "Instant Rate Converter",
     "slug": "instant-rate-converter",
+    "owner": "dinolisk",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -34,7 +35,7 @@
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "eec57c4d-ecd0-4d53-8fa6-c8b996b4ee6f"
       }
     }
   }
