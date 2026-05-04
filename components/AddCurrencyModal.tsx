@@ -181,7 +181,7 @@ function makeStyles(colors: ColorScheme) {
       paddingVertical: 16,
     },
     title: {
-      fontSize: 20,
+      fontSize: 17,
       fontWeight: '700',
       color: colors.textPrimary,
     },
